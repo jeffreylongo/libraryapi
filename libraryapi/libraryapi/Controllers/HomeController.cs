@@ -1,6 +1,7 @@
 ﻿using libraryapi.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -54,6 +55,21 @@ namespace libraryapi.Controllers
         {
             Books = Books.Where(w => w.Id != id).ToList();
             return Ok();
+        }
+
+        public List<Books> Library { get; set; } = new List<Books>();
+        const string ConnectionString = @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
+        static private sqlDataReader ExecuteQuery(string query)
+        {
+            sqlDataReader rv;
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+                rv = cmd.ExecuteReader();
+                connection.Close();
+            }
+            return rv;
         }
 
         /*public ActionResult Index()
