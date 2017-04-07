@@ -15,10 +15,31 @@ namespace libraryapi.Controllers
             new Books {Title = "The Gunslinger", Author = "Stephen King", YearPublished = 1982, Genre = "Horror", IsCheckedOut = false, LastCheckedOutDate = 0, DueBackDate = 0 }
         };
 
+        const string ConnectionString = @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
+
+
         [HttpGet]
         public IEnumerable<Books> GetAllBooks()
         {
-            return Books;
+            var rv = new List<Books>();
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = "SELECT * FROM LibraryTable";
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    rv.Add(new Books
+                    {
+                        Title = reader["Title"].ToString(),
+                        Author = reader["Author"].ToString(),
+                    });
+                }
+
+                connection.Close();
+            }
+            return rv;
         }
 
         [HttpGet]
@@ -57,20 +78,20 @@ namespace libraryapi.Controllers
             return Ok();
         }
 
-        public List<Books> Library { get; set; } = new List<Books>();
-        const string ConnectionString = @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
-        static private sqlDataReader ExecuteQuery(string query)
+
+        
+
+        /*static private int GetCountFromTable(string LibraryTable, string column = "Title")
         {
-            sqlDataReader rv;
-            using (var connection = new SqlConnection(ConnectionString))
+            var count = 0;
+            var query = $"SELECT COUNT({Title}) FROM {LibraryTable}";
+            var reader = ExecuteQuery(query);
+            while (reader.Read())
             {
-                var cmd = new SqlCommand(query, connection);
-                connection.Open();
-                rv = cmd.ExecuteReader();
-                connection.Close();
+                count = (int)reader[0];
             }
-            return rv;
-        }
+            return count;
+        }*/
 
         /*public ActionResult Index()
         {

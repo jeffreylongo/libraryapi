@@ -1,6 +1,6 @@
 ﻿namespace libraryapi.Controllers
 {
-    internal class sqlDataReader
+    internal class ConnectionString
     {
     }
 }
