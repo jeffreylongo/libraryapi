@@ -34,6 +34,7 @@ namespace libraryapi.Controllers
                     {
                         Title = reader["Title"].ToString(),
                         Author = reader["Author"].ToString(),
+                        Genre = reader["Genre"].ToString(),
                     });
                 }
 
@@ -45,6 +46,21 @@ namespace libraryapi.Controllers
         [HttpGet]
         public IHttpActionResult GetBook(string title)
         {
+            var rv = new Books();
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = "SELECT title FROM LibraryTable";
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    rv = (new Books
+                    {
+                        Title = reader["Title"].ToString()
+                    });
+                }
+            }
             return Ok(Books.FirstOrDefault(f => String.Compare(title, f.Title) == 0));
         }
 
