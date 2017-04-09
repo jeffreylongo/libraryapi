@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using libraryapi.Controllers;
 
 namespace libraryapi.Controllers
 {
@@ -64,6 +65,7 @@ namespace libraryapi.Controllers
                         Title = reader["Title"].ToString()
                     });
                 }
+                connection.Close();
             }
             return Ok(Books.FirstOrDefault(f => String.Compare(title, f.Title) == 0));
         }
@@ -93,7 +95,7 @@ namespace libraryapi.Controllers
             return Ok(book);
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public IHttpActionResult PostBook(Books updated)
         {
             var found = Books.FirstOrDefault(f => f.Id == updated.Id);
@@ -115,7 +117,7 @@ namespace libraryapi.Controllers
                 cmd.Parameters.AddWithValue("@Title", found);
             }
 
-        }
+        }*/
 
         [HttpDelete]
         public IHttpActionResult DeleteBook(Guid id)
