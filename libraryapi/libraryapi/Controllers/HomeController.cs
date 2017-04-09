@@ -65,11 +65,28 @@ namespace libraryapi.Controllers
         }
 
         [HttpPut]
-        public Books PutBook(string title, string author)
+        public IHttpActionResult CreateBook([FromBody] Books book)
         {
-            var b = new Books { Title = title, Author = author };
-            Books.Add(b);
-            return b;
+            //update a book
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var query = @"INSERT INTO[dbo].[LibraryTable] ([Title], [Author], [YearPublished], [Genre], [IsCheckedOut], [LastCheckedOutDate], [DueBackDate]) 
+                                OUTPUT INSERTED.Id
+                                VALUES (@Title, @Author, @YearPublished, @Genre, @IsCheckedOut, @LastCheckedOutDate, @DueBackDate)";
+                var cmd = new SqlCommand(query, connection);
+                connection.Open();
+                cmd.Parameters.AddWithValue("@Title", book.Title);
+                cmd.Parameters.AddWithValue("@Author", book.Author);
+                cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
+                cmd.Parameters.AddWithValue("@Genre", book.Genre);
+                cmd.Parameters.AddWithValue("@IsCheckedOut", book.IsCheckedOut);
+                cmd.Parameters.AddWithValue("@LastCheckedOutDate", book.LastCheckedOutDate);
+                cmd.Parameters.AddWithValue("@DueBackDate", book.DueBackDate);
+                var newID = cmd.ExecuteScalar();
+                book.ID = (int)newID;
+                connection.Close();
+            }
+            return Ok(book);
         }
 
         [HttpPost]
@@ -85,6 +102,15 @@ namespace libraryapi.Controllers
                 found.Title = updated.Title;
                 return Ok(found);
             }
+
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var text = @"INSERT INTO LibraryTable (Title, Author, Genre)" +
+                            "Values (@Title, @Author, @Genre)";
+
+                cmd.Parameters.AddWithValue("@Title", found);
+            }
+
         }
 
         [HttpDelete]
