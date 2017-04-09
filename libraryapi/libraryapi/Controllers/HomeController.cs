@@ -34,7 +34,11 @@ namespace libraryapi.Controllers
                     {
                         Title = reader["Title"].ToString(),
                         Author = reader["Author"].ToString(),
+                        YearPublished = reader["YearPublished"] as int?,
                         Genre = reader["Genre"].ToString(),
+                        IsCheckedOut = reader["IsCheckedOut"] as bool?,
+                        LastCheckedOutDate = reader["LastCheckedOutDate"] as int?,
+                        DueBackDate = reader["DueBackDate"] as int?
                     });
                 }
 
